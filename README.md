@@ -23,6 +23,6 @@ terraform plan
 terraform apply -auto-approve
 
 # create argo cd:
-use the application.yml in the rool directory to create argo.
+use the application.yml file in the root directory to create argoCD or you use the terminal using kubectl.
 
 command: kubectl apply -f application.yaml
