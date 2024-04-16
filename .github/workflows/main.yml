@@ -1,9 +1,9 @@
-# This is a basic workflow to help you get started with Actions
-
-name: demo-gitops
+name: CICD pipeline to push app to EKS using helmchart and Argocd
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'charts/**'
 env:
   ECR_REPOSITORY: gitops-argocd
 
@@ -83,3 +83,13 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         commit_message: Version updated
+
+    - name: Setup Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        helm plugin install https://github.com/hypnoglow/helm-s3.git
+      
+    - name: Push Helm Chart to S3
+      run: |
+        helm package charts/mychart --version ${{ github.run_number }}
+        helm s3 push mychart-${{ github.run_number }}.tgz s3://${{ secrets.HELM_S3_BUCKET }}
